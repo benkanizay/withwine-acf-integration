@@ -108,9 +108,8 @@ class WithWine_ACF_Cache {
 	/**
 	 * Clear all WithWine ACF caches.
 	 *
-	 * Accepts unused hook arguments, such as SiteGround's URL argument.
 	 */
-	public static function clear_all( ...$args ): void {
+	public static function clear_all(): void {
 
 		foreach ( self::CACHE_NAMES as $name ) {
 			self::clear( $name );

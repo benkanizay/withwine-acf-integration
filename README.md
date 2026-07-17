@@ -15,8 +15,8 @@ Rather than introducing custom ACF field types, this plugin works with ACF's nat
 - No custom ACF field types required.
 - Supports multiple selection, Stylized UI (Select2), return formats and conditional logic.
 - Automatic transient caching for fast admin performance.
-- Manual cache refresh from the plugin settings page.
-- Automatically clears cached data when SiteGround Optimizer flushes the site cache (if installed).
+- Manual cache clearing from the plugin settings page.
+- Public PHP helper for integrating cache invalidation with custom logic or third-party cache plugins.
 - Displays the configured ACF field label and field type in the settings page.
 - Warns when configured field keys cannot be found or belong to unsupported field types.
 - Prevents duplicate field keys from being saved.
@@ -85,11 +85,39 @@ The cache can be cleared at any time from:
 
 **Settings → WithWine ACF → Clear Choice Cache**
 
-The cache is also cleared automatically when:
+The plugin does not automatically tie its choice cache to page-cache purges. Clearing a page cache whenever a post is saved could otherwise remove the available ACF choices before the editor reloads.
 
-- SiteGround Optimizer flushes the site cache (if installed).
+The next supported frontend request automatically rebuilds the cache after it has been cleared.
 
-The next frontend request automatically rebuilds the cache.
+### Clearing the cache programmatically
+
+The plugin exposes a public helper that can be connected to any cache plugin or custom invalidation logic as needed:
+
+```php
+withwine_acf_integration_clear_cache();
+```
+
+Clear only Product choices:
+
+```php
+withwine_acf_integration_clear_cache( 'products' );
+```
+
+Clear only Product List choices:
+
+```php
+withwine_acf_integration_clear_cache( 'product_lists' );
+```
+
+For example:
+
+```php
+add_action( 'your_cache_plugin_flush_action', function() {
+	withwine_acf_integration_clear_cache();
+} );
+```
+
+Only connect cache clearing to an event that genuinely means the WithWine Product or Product List data should be refreshed.
 
 ---
 
